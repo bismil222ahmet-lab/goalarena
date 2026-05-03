@@ -33,14 +33,39 @@ const queryClient = new QueryClient();
 
 function AppInit() {
   const { theme, language } = useAppStore();
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
+
   useEffect(() => {
     const config = getLanguageConfig(language);
     document.documentElement.dir = config.dir;
     document.documentElement.lang = config.code;
   }, [language]);
+
+  // إضافة كود Google News المخصص لـ GoalArena
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://news.google.com/swg/js/v1/swg-basic.js";
+    script.async = true;
+    script.type = "application/javascript";
+    document.head.appendChild(script);
+
+    const inlineScript = document.createElement("script");
+    inlineScript.innerHTML = `
+      (self.SWG_BASIC = self.SWG_BASIC || []).push( basicSubscriptions => {
+        basicSubscriptions.init({
+          type: "NewsArticle",
+          isPartOfType: ["Product"],
+          isPartOfProductId: "CAowip3LDA:openaccess",
+          clientOptions: { theme: "light", lang: "en" }
+        });
+      });
+    `;
+    document.head.appendChild(inlineScript);
+  }, []);
+
   return null;
 }
 
